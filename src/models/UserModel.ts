@@ -1,30 +1,52 @@
-export class UserModel implements ModelInterface {
+import { BaseModel } from './BaseModel';
+
+export class UserModel extends BaseModel {
     private id: string;
-    private first_name: string;
-    private last_name: string;
     private email: string;
-    private created_at: string;
-    private updated_at: string;
+    private phone: string;
+    private password: string;
+    private role: number;
+    private roleId: string;
+    private refreshToken: string;
+    private refreshTokenExpirity: Date;
+    private createdAt: Date;
+    private updatedAt: Date;
 
     constructor(
         id: string,
-        first_name: string,
-        last_name: string,
         email: string,
-        created_at: string,
-        updated_at: string
+        phone: string,
+        password: string,
+        role: number,
+        roleId: string,
+        refreshToken: string,
+        refreshTokenExpirity: Date,
+        createdAt: Date,
+        updatedAt: Date,
     ) {
+        super();
         this.id = id;
-        this.first_name = first_name;
-        this.last_name = last_name;
         this.email = email;
-        this.created_at = created_at;
-        this.updated_at = updated_at;
+        this.phone = phone;
+        this.password = password;
+        this.role = role;
+        this.roleId = roleId;
+        this.refreshToken = refreshToken;
+        this.refreshTokenExpirity = refreshTokenExpirity;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
-    public serialize(): object {
-        return JSON.parse(JSON.stringify(this));
-    }
+    public static ROLE = {
+        0: 'administrator',
+        1: 'building-principal',
+        2: 'building-managers',
+        3: 'building-admin',
+        4: 'building-security',
+        5: 'building-repairman',
+        10: 'owner',
+        11: 'tenant',
+    };
 
     public getId(): string {
         return this.id;
@@ -32,22 +54,6 @@ export class UserModel implements ModelInterface {
 
     public setId(id: string): void {
         this.id = id;
-    }
-
-    public getFirst_name(): string {
-        return this.first_name;
-    }
-
-    public setFirst_name(first_name: string): void {
-        this.first_name = first_name;
-    }
-
-    public getLast_name(): string {
-        return this.last_name;
-    }
-
-    public setLast_name(last_name: string): void {
-        this.last_name = last_name;
     }
 
     public getEmail(): string {
@@ -58,19 +64,67 @@ export class UserModel implements ModelInterface {
         this.email = email;
     }
 
-    public getCreated_at(): string {
-        return this.created_at;
+    public getPhone(): string {
+        return this.phone;
     }
 
-    public setCreated_at(created_at: string): void {
-        this.created_at = created_at;
+    public setPhone(phone: string): void {
+        this.phone = phone;
     }
 
-    public getUpdated_at(): string {
-        return this.updated_at;
+    public getPassword(): string {
+        return this.password;
     }
 
-    public setUpdated_at(updated_at: string): void {
-        this.updated_at = updated_at;
+    public setPassword(password: string): void {
+        this.password = password;
+    }
+
+    public getRole(): number {
+        return this.role;
+    }
+
+    public setRole(role: number): void {
+        this.role = role;
+    }
+
+    public getRoleId(): string {
+        return this.roleId;
+    }
+
+    public setRoleId(roleId: string): void {
+        this.roleId = roleId;
+    }
+
+    public getRefreshToken(): string {
+        return this.refreshToken;
+    }
+
+    public setRefreshToken(refreshToken: string): void {
+        this.refreshToken = refreshToken;
+    }
+
+    public getRefreshTokenExpirity(): Date {
+        return this.refreshTokenExpirity;
+    }
+
+    public setRefreshTokenExpirity(refreshTokenExpirity: Date): void {
+        this.refreshTokenExpirity = refreshTokenExpirity;
+    }
+
+    public getCreatedAt(): Date {
+        return this.createdAt;
+    }
+
+    public setCreatedAt(createdAt: Date): void {
+        this.createdAt = createdAt;
+    }
+
+    public getUpdatedAt(): Date {
+        return this.updatedAt;
+    }
+
+    public setUpdatedAt(updatedAt: Date): void {
+        this.updatedAt = updatedAt;
     }
 }

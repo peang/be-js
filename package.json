@@ -1,11 +1,11 @@
 {
-    "name": "be-js",
+    "name": "amos-api",
     "version": "0.0.1",
     "description": "",
-    "author": "",
+    "author": "Irvan Setiawan",
     "license": "MIT",
     "scripts": {
-        "prebuild": "rimraf dist",
+        "prebuild": "rm -rf dist && rm tsconfig.build.tsbuildinfo",
         "build": "nest build",
         "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
         "start": "nest start",
@@ -17,7 +17,8 @@
         "test:watch": "jest --watch",
         "test:cov": "jest --coverage",
         "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-        "test:e2e": "jest --config ./test/jest-e2e.json"
+        "test:e2e": "jest --config ./test/jest-e2e.json",
+        "migrate": "npx sequelize-cli db:migrate"
     },
     "dependencies": {
         "@hapi/joi": "^15.1.0",
@@ -28,11 +29,9 @@
         "@types/elasticsearch": "^5.0.35",
         "bcryptjs": "^2.4.3",
         "dotenv": "^8.1.0",
-        "elasticsearch": "^16.4.0",
-        "firebase-admin": "^8.6.0",
-        "mysql2": "^2.0.0",
+        "jsonwebtoken": "^8.5.1",
+        "mysql2": "^2.1.0",
         "nest-router": "^1.0.9",
-        "pg": "^7.12.1",
         "randomstring": "^1.1.5",
         "reflect-metadata": "^0.1.13",
         "rimraf": "^3.0.0",
@@ -51,6 +50,7 @@
         "@types/uuid": "^3.4.5",
         "jest": "^24.9.0",
         "prettier": "^1.18.2",
+        "sequelize-cli": "^5.5.1",
         "supertest": "^4.0.2",
         "ts-jest": "^24.1.0",
         "ts-loader": "^6.1.1",

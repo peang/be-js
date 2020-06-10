@@ -1,3 +1,1 @@
-interface ResponseInterface {
-    
-}
+interface ResponseInterface {}

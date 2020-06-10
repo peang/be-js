@@ -1,5 +1,5 @@
 export interface AuthLoginPayloadInterface {
     body: {
-        username: string
-    }
+        username: string,
+    };
 }

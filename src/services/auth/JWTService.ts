@@ -1,6 +1,6 @@
 import * as jwt from 'jsonwebtoken';
 import * as random from 'randomstring';
-import * as moment from 'moment';
+import moment from 'moment';
 import * as bcrypt from 'bcryptjs';
 
 const salt = 10;

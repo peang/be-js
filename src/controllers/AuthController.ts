@@ -1,12 +1,12 @@
-import { Controller, Req, Post, Body, HttpStatus, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { JWTService } from '../services/auth/JWTService';
+import { Body, Controller, HttpStatus, InternalServerErrorException, NotFoundException, Post, Req } from '@nestjs/common';
 import { UserModel } from '../models/UserModel';
-import { UserSQLRepository } from '../repo/UserSQLRepository';
+import { UserRepository } from '../repo/UserRepository';
+import { JWTService } from '../services/auth/JWTService';
 
 @Controller('/auth')
 export class AuthController {
     constructor(
-        private readonly UserRepo: UserSQLRepository
+        private readonly UserRepo: UserRepository,
     ) { }
 
     @Post('/login')
@@ -14,11 +14,11 @@ export class AuthController {
         try {
             // Find User
             const User: UserModel = await this.UserRepo.getUserDetail({
-                name: body.name
+                email: body.email,
             });
 
             if (!User) {
-                throw new NotFoundException('USER_NOT_FOUND')
+                throw new NotFoundException('USER_NOT_FOUND');
             }
 
             // Generate Token with user data
@@ -26,17 +26,17 @@ export class AuthController {
 
             const refreshToken: { token } = await JWTService.generateRefreshToken();
             await this.UserRepo.update({
-                id: User.getId()
+                id: User.getId(),
             }, {
-                refresh_token: refreshToken.token
+                refresh_token: refreshToken.token,
             });
 
             return {
                 message: 'AUTH_CALLBACK',
                 status: HttpStatus.OK,
                 content: {
-                    token
-                }
+                    token,
+                },
             };
         } catch (err) {
             throw new InternalServerErrorException(err.message);

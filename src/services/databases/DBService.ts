@@ -1,19 +1,25 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { Options, Sequelize, Op } from 'sequelize';
+import { Options, Sequelize } from 'sequelize';
 import { Injectable } from '@nestjs/common';
+
+interface IDbInput {
+    connection_string: string;
+    models_path: string;
+}
 
 type instance = any | null;
 
 const options: Options = {
     dialect: 'mysql',
+    logging: process.env.NODE_ENV === 'production' ? false : console.log, // tslint:disable-line
     pool: {
         min: 0,
         max: 5,
         idle: 10000,
-        acquire: 20000
-    }
+        acquire: 20000,
+    },
 };
 
 let modelsInitialized: boolean = false;
@@ -21,44 +27,31 @@ let models: instance = null;
 
 @Injectable()
 export class DBService {
-    public static initialize() {
-        if (
-            process.env.MYSQL_DB_HOST &&
-            process.env.MYSQL_DB_PORT &&
-            process.env.MYSQL_DB_USERNAME &&
-            process.env.MYSQL_DB_PASSWORD &&
-            process.env.MYSQL_DB_DB &&
-            process.env.MYSQL_DB_MODELS
-        ) {
-            models = {};
-            const connectionString = `mysql://${process.env.MYSQL_DB_USERNAME}:${process.env.MYSQL_DB_PASSWORD}@${process.env.MYSQL_DB_HOST}:${process.env.MYSQL_DB_PORT}/${process.env.MYSQL_DB_DB}`;
-            const sequelize = new Sequelize(connectionString, options);
-            
-            const modelsDir = path.join(__dirname, '../../..', process.env.MYSQL_DB_MODELS);
+    public static initialize(data: IDbInput) {
+        models = {};
+        const sequelize = new Sequelize(data.connection_string, options);
 
-            fs.readdirSync(modelsDir)
-                .filter((file) => {
-                    const fileExtension: string = file.slice(-3);
-                    const isEligible: boolean = (fileExtension === '.js' || fileExtension === '.ts');
-                    return (file.indexOf('.') !== 0) && isEligible;
-                })
-                .forEach((file) => {
-                    const model = sequelize.import(path.join(modelsDir, file));
-                    models[model.name] = model;
-                });
-
-            Object.keys(models).forEach((modelName) => {
-                if (models[modelName].associate) {
-                    models[modelName].associate(models);
-                }
+        const modelsDir = path.join(__dirname, '../../..', data.models_path);
+        fs.readdirSync(modelsDir)
+            .filter((file) => {
+                const fileExtension: string = file.slice(-3);
+                const isEligible: boolean = (fileExtension === '.js' || fileExtension === '.ts');
+                return (file.indexOf('.') !== 0) && isEligible;
+            })
+            .forEach((file) => {
+                const model = sequelize.import(path.join(modelsDir, file));
+                models[model.name] = model;
             });
 
-            models.ORMProvider = Sequelize;
-            models.context = sequelize;
-            modelsInitialized = true;
+        Object.keys(models).forEach((modelName) => {
+            if (models[modelName].associate) {
+                models[modelName].associate(models);
+            }
+        });
 
-            console.log('- MYSQL Connected')
-        }
+        models.ORMProvider = Sequelize;
+        models.context = sequelize;
+        modelsInitialized = true;
     }
 
     public static getInstance() {
@@ -73,7 +66,7 @@ export class DBService {
             throw new Error('SQL Not initialize');
         }
         models.db_transaction = await models.context.transaction({
-            isolationLevel: models.ORMProvider.Transaction.ISOLATION_LEVELS.READ_UNCOMMITTED
+            isolationLevel: models.ORMProvider.Transaction.ISOLATION_LEVELS.READ_UNCOMMITTED,
         });
     }
 
